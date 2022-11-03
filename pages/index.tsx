@@ -89,7 +89,7 @@ const Home = ({ tasks }: Task) => {
   }
 
   function handleCancel() {
-    setItems({title, content, id})
+    setItems({title: '', content: '', id: ''})
     setNewItems(true)
   }
 
