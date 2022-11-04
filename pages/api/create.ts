@@ -1,24 +1,25 @@
-import { prisma } from '../../lib/prisma';
+import { PrismaClient } from '@prisma/client';
 import { NextApiRequest, NextApiResponse } from "next";
 
+const prisma = new PrismaClient();
+
 type Data = {
-    message: string
+    title: string;
+    content: string;
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<Data>){
-    const {title, content} = req.body
+    if (req.method === "POST") {
+        const {title, content} = JSON.parse(req.body) as Data;
 
-    try {
-        await prisma.task.create({
+        const create = await prisma.task.create({
             data: {
                 title,
-                content
-            }
+                content,
+            },
+
         })
-        res.status(200).json({message: "Task Added"})
-    } catch (error) {
-        console.log("Failed");
-        res.status(400).json({ message: "error"})
+        res.status(400).json(create)
 
     }
 }

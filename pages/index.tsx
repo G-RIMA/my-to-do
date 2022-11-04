@@ -5,7 +5,7 @@ import { useState } from 'react'
 import { GetServerSideProps, NextPage } from 'next'
 import { prisma } from '../lib/prisma'
 import { useRouter } from 'next/router'
-
+import { useMutation, useQueryClient} from "react-query";
 interface Task{
   tasks: {
     id: string
@@ -19,10 +19,12 @@ interface FormData {
   id: string
 }
 const Home = ({ tasks }: Task) => {
-  const [items, setItems] = useState<FormData>({title: '', content: '', id: ''});
-  const [newItems, setNewItems] = useState<Boolean>(true)
+  const [items, setItems] = useState({title: '', content: '', id: ''});
+  const [newItems, setNewItems] = useState(true)
   const router = useRouter()
-
+  const queryClint = useQueryClient();
+  
+  
   const refreshData = () => {
     router.replace(router.asPath)
   }
@@ -67,7 +69,7 @@ const Home = ({ tasks }: Task) => {
     }
   }
 
-  async function updateItem(title:" ", content: '', id:'') {
+  async function updateItem(title: string, content: string, id: string) {
     //console.log(title, content, id)
     setItems({title, content, id})
     setNewItems(false)
@@ -107,12 +109,6 @@ const Home = ({ tasks }: Task) => {
           onChange={(e) => setItems({...items,title: e.target.value})}
           className="border-2 rounded border-gray-6 p-1" 
            ></input>
-        <textarea
-          placeholder='Any additional information'
-          value={items.content}
-          onChange={(e) => setItems({...items,content: e.target.value})}
-          className="border-2 rounded border-gray-6 p-1" 
-           ></textarea>
         {newItems ? (
         <button type="submit" className='bg-red-500 text-white rounded p-1'>Add + </button>
         ): (
@@ -135,7 +131,7 @@ const Home = ({ tasks }: Task) => {
                   <p>{task.content}</p>
 
                 </div>
-                <button onClick={() => updateItem(task.title, task.content, task.id)} className="bg-blue-500 px-3 text-white rounded">Edit</button>
+                <button onClick={() => updateItem(task.id, task.content, task.title)} className="bg-blue-500 px-3 text-white rounded">Edit</button>
                 <button onClick={() => deleteItem(task.id)} className="bg-red-500 px-3 text-white rounded">X</button>          
               </div>
             </li>
